@@ -9,12 +9,12 @@ function App() {
     return (
         <Router>
         <div className="App">
-          <Routes>
-            <Route path="/" element={<AddChore />} />
-            <Route path="/:id/edit" element={<UpdateChore />} />
-            <Route path="/:id/details" element={<ChoreDetails />} />
-            <Route path="/chores" element={<ChoreList />} />
-          </Routes>
+            <Routes>
+                <Route path="/" element={<AddChore />} />
+                <Route path="/:id/edit" element={<UpdateChore />} />
+                <Route path="/:id/details" element={<ChoreDetails />} />
+                <Route path="/chores" element={<ChoreList />} />
+            </Routes>
         </div>
         </Router>
     );
