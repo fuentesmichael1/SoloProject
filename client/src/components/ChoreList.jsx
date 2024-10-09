@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+const API_URL = 'http://localhost:8000';
+
 function ChoreList() {
     const [chores, setChores] = useState([]);
 
@@ -9,9 +11,15 @@ function ChoreList() {
     }, []);
 
     const fetchChores = () => {
-        fetch('/api/chores')
-            .then(response => response.json())
-            .then(data => setChores(data));
+        fetch(`${API_URL}/api/chores`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => setChores(data))
+            .catch(error => console.log('Fetch error:', error));
     };
 
     return (

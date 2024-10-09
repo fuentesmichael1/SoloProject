@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+const API_URL = 'http://localhost:8000';
+
 function UpdateChore() {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
+    const [location, setLocation] = useState('');
     const [completed, setCompleted] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`/api/chores/${id}`)
+        fetch(`${API_URL}/api/chores/${id}`)
             .then(response => response.json())
             .then(data => {
                 setName(data.name);
@@ -20,7 +23,7 @@ function UpdateChore() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        fetch(`/api/chores/${id}`, {
+        fetch(`${API_URL}/api/chores/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -36,18 +39,22 @@ function UpdateChore() {
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
-                    placeholder="Chore Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                 />
                 <textarea
-                    placeholder="Description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
                 />
                 <label>
+                <input
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    required
+                />
                     <input
                         type="checkbox"
                         checked={completed}

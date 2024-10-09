@@ -1,15 +1,15 @@
 import express from 'express';
-import * as PatientController from '../controllers/chores.controller.js';
+import * as ChoreController from '../controllers/chores.controller.js';
 
 const router = express.Router();
 
-router.route('/patients')
-    .get(PatientController.getAllPatients)
-    .post(PatientController.createPatient);
+router.route('/chores')
+    .get(ChoreController.getAllChores)
+    .post(ChoreController.createChore);
 
-router.route('/patients/:id')
-    .get(PatientController.getOnePatient)
-    .put(PatientController.updatePatient)
-    .delete(PatientController.deletePatient);
+router.route('/chores/:id')
+    .get(ChoreController.getOneChore)
+    .put(ChoreController.updateChore)
+    .delete(ChoreController.deleteChore);
 
 export default router;

@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
+const API_URL = 'http://localhost:8000';
+
 function ChoreDetails() {
     const [chore, setChore] = useState(null);
     const { id } = useParams();
 
     useEffect(() => {
-        // Fetch chore details from your API here
-        // For now, we'll use dummy data
-        setChore({ id: id, name: 'Sample Chore', description: 'This is a sample chore', completed: false });
+        fetch(`${API_URL}/api/chores/${id}`)
+            .then(response => response.json())
+            .then(data => setChore(data));
     }, [id]);
 
     if (!chore) return <div>Loading...</div>;
@@ -16,9 +18,10 @@ function ChoreDetails() {
     return (
         <div>
             <h2>Chore Details</h2>
-            <p>Name: {chore.name}</p>
-            <p>Description: {chore.description}</p>
-            <p>Status: {chore.completed ? 'Completed' : 'Pending'}</p>
+            <p><strong>Name:</strong> {chore.name}</p>
+            <p><strong>Description:</strong> {chore.description}</p>
+            <p><strong>Location:</strong> {chore.location}</p>
+            <p><strong>Status:</strong> {chore.completed ? 'Completed' : 'Pending'}</p>
             <Link to={`/chores/${id}/edit`}>Edit</Link>
             <Link to="/chores">Back to List</Link>
         </div>

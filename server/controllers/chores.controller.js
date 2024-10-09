@@ -1,48 +1,49 @@
-import Patient from '../models/chores.model.js';
+import Chore from '../models/chores.model.js';
 
-export const createPatient = async (req, res) => {
+export const createChore = async (req, res) => {
     try {
-        const patient = new Patient(req.body);
-        await patient.save();
-        res.json(patient);
+        const chore = new Chore(req.body);
+        await chore.save();
+        res.json(chore);
     } catch (err) {
         res.status(400).json(err);
     }
 };
-export const getAllPatients = async (req, res) => {
+
+export const getAllChores = async (req, res) => {
     try {
-        const patients = await Patient.find();
-        res.json(patients);
+        const chores = await Chore.find();
+        res.json(chores);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-export const getOnePatient = async (req, res) => {
+export const getOneChore = async (req, res) => {
     try {
-        const patient = await Patient.findById(req.params.id);
-        if (!patient) return res.status(404).json({ message: 'Patient not found' });
-        res.json(patient);
+        const chore = await Chore.findById(req.params.id);
+        if (!chore) return res.status(404).json({ message: 'Chore not found' });
+        res.json(chore);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-export const updatePatient = async (req, res) => {
+export const updateChore = async (req, res) => {
     try {
-        const updatedPatient = await Patient.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-        if (!updatedPatient) return res.status(404).json({ message: 'Patient not found' });
-        res.json(updatedPatient);
+        const updatedChore = await Chore.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        if (!updatedChore) return res.status(404).json({ message: 'Chore not found' });
+        res.json(updatedChore);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 };
 
-export const deletePatient = async (req, res) => {
+export const deleteChore = async (req, res) => {
     try {
-        const patient = await Patient.findByIdAndDelete(req.params.id);
-        if (!patient) return res.status(404).json({ message: 'Patient not found' });
-        res.json({ message: 'Patient deleted successfully' });
+        const chore = await Chore.findByIdAndDelete(req.params.id);
+        if (!chore) return res.status(404).json({ message: 'Chore not found' });
+        res.json({ message: 'Chore deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
