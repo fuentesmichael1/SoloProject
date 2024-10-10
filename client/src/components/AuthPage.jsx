@@ -15,32 +15,27 @@ function AuthPage() {
     const handleLoginChange = (e) => {
         setLoginUser({ ...loginUser, [e.target.name]: e.target.value });
     };
-
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8000/api/register', registerUser);
+            const response = await axios.post('http://localhost:8000/api/users/register', registerUser);
             console.log('Registration successful:', response.data);
             navigate('/login');
         } catch (error) {
-            setErrors(error.response.data);
+            setErrors(error.response?.data || { register: 'Registration failed' });
         }
     };
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        console.log('Login attempt with:', loginUser); // Added logging
         try {
-            const response = await axios.post('http://localhost:8000/api/login', loginUser);
-            console.log('Login response:', response.data); // Added logging
+            const response = await axios.post('http://localhost:8000/api/users/login', loginUser);
             localStorage.setItem('token', response.data.token);
             navigate('/dashboard');
         } catch (error) {
-            console.error('Login error:', error.response?.data); // Enhanced error logging
-            setErrors(error.response?.data || { login: 'An error occurred' });
+            setErrors(error.response?.data || { login: 'Login failed' });
         }
     };
-
     return (
         <div>
             <h1>Welcome To Chore Tracker</h1>

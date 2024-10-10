@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
 
 const ChoreSchema = new mongoose.Schema({
     name: {
@@ -20,7 +19,8 @@ const ChoreSchema = new mongoose.Schema({
     },
     createdBy: { 
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User'
+        ref: 'User', 
+        required: true 
     },
     assignedTo: { 
         type: mongoose.Schema.Types.ObjectId, 
@@ -34,30 +34,8 @@ const ChoreSchema = new mongoose.Schema({
     completed: {
         type: Boolean,
         default: false
-    },
-    email: {
-        type: String,
-        required: [true, 'Email is required'],
-        unique: true,
-        validate: {
-            validator: val => /^([\w-\.]+@([\w-]+\.)+[\w-]+)?$/.test(val),
-            message: "Please enter a valid email"
-        }
-    },
-    password: {
-        type: String,
-        required: [true, 'Password is required'],
-        minlength: [8, 'Password must be 8 characters or longer']
     }
 }, { timestamps: true });
-
-ChoreSchema.pre('save', function(next) {
-    bcrypt.hash(this.password, 10)
-        .then(hash => {
-            this.password = hash;
-            next();
-        });
-});
 
 const Chore = mongoose.model('Chore', ChoreSchema);
 

@@ -1,4 +1,4 @@
-import Chore from '../models/chores.model.js';
+import Chore from '../models/chore.model.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 

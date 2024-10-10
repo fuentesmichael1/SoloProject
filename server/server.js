@@ -3,7 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import dbConnect from './config/mongoose.config.js';
-import choreRoutes from './routes/chores.routes.js';
+import choreRoutes from './routes/chore.routes.js';
+import userRoutes from './routes/user.routes.js';
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(cors({
     credentials: true
 }));
 
+app.use('/api/users', userRoutes);
 app.use('/api', choreRoutes);
 
 dbConnect();
