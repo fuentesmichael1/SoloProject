@@ -1,72 +1,77 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
 
 const API_URL = 'http://localhost:8000';
 
 function AddChore() {
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [location, setLocation] = useState('');
+    const [chore, setChore] = useState({ name: '', description: '', location: '' });
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
-    const validateForm = () => {
-        let tempErrors = {};
-        if (name.length < 2) tempErrors.name = "Name must be at least 2 characters long";
-        if (name.length > 40) tempErrors.name = "Name cannot exceed 40 characters";
-        if (description.length < 4) tempErrors.description = "Description must be at least 4 characters long";
-        if (!location) tempErrors.location = "Location is required";
-        setErrors(tempErrors);
-        return Object.keys(tempErrors).length === 0;
+    const handleInputChange = (e) => {
+        setChore({ ...chore, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (validateForm()) {
-            fetch(`${API_URL}/api/chores`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, description, location, completed: false }),
-            })
-            .then(() => navigate('/chores'))
-            .catch(err => console.log(err));
+        try {
+            const response = await axios.post(`${API_URL}/api/chores`, chore);
+            navigate('/chores', { state: { newChore: response.data } });
+        } catch (error) {
+            if (error.response && error.response.data && error.response.data.errors) {
+                setErrors(error.response.data.errors);
+            } else {
+                console.error('Error adding chore:', error);
+            }
         }
     };
 
     return (
         <div>
-            <h2>Add New Chore</h2>
-            <form onSubmit={handleSubmit}>
+            <nav>
                 <div>
-                    <input
-                        type="text"
-                        placeholder="Chore Name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                    {errors.name && <p style={{color: 'red'}}>{errors.name}</p>}
+                    <Link to="/chores">Home</Link>
+                    <h2>Add New Chore</h2>
                 </div>
-                <div>
-                    <textarea
-                        placeholder="Description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                    />
-                    {errors.description && <p style={{color: 'red'}}>{errors.description}</p>}
-                </div>
-                <div>
-                    <input
-                        type="text"
-                        placeholder="Location"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                    />
-                    {errors.location && <p style={{color: 'red'}}>{errors.location}</p>}
-                </div>
-                <button type="submit">Add Chore</button>
-            </form>
+            </nav>
+            <div>
+                <form onSubmit={handleSubmit}>
+                    <div>
+                        <input
+                            name="name"
+                            value={chore.name}
+                            onChange={handleInputChange}
+                            placeholder="Chore Name"
+                            required
+                        />
+                        {errors.name && <p>{errors.name.message}</p>}
+                    </div>
+                    <div>
+                        <textarea
+                            name="description"
+                            value={chore.description}
+                            onChange={handleInputChange}
+                            placeholder="Description"
+                            required
+                        />
+                        {errors.description && <p>{errors.description.message}</p>}
+                    </div>
+                    <div>
+                        <input
+                            name="location"
+                            value={chore.location}
+                            onChange={handleInputChange}
+                            placeholder="Location"
+                            required
+                        />
+                        {errors.location && <p>{errors.location.message}</p>}
+                    </div>
+                    <div>
+                        <button type="submit">Add Chore</button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 }
