@@ -21,16 +21,14 @@ function UpdateChore() {
             });
     }, [id]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        fetch(`${API_URL}/api/chores/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name, description, completed }),
-        })
-        .then(() => navigate('/chores'));
+        try {
+            await axios.put(`/api/chores/${id}`, { name, description, location, completed });
+            navigate('/dashboard');
+        } catch (error) {
+            console.error('Error updating chore:', error);
+        }
     };
 
     return (

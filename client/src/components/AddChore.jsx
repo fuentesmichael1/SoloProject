@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const API_URL = 'http://localhost:8000';
+import axios from 'axios';
 
 function AddChore() {
     const [name, setName] = useState('');
@@ -20,18 +19,15 @@ function AddChore() {
         return Object.keys(tempErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (validateForm()) {
-            fetch(`${API_URL}/api/chores`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, description, location, completed: false }),
-            })
-            .then(() => navigate('/chores'))
-            .catch(err => console.log(err));
+            try {
+                await axios.post('http://localhost:8000/api/chores', { name, description, location, completed: false });
+                navigate('/dashboard');
+            } catch (err) {
+                console.error(err);
+            }
         }
     };
 

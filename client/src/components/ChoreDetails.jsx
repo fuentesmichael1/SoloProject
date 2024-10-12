@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-
-const API_URL = 'http://localhost:8000';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function ChoreDetails() {
     const [chore, setChore] = useState(null);
     const { id } = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`${API_URL}/api/chores/${id}`)
-            .then(response => response.json())
-            .then(data => setChore(data));
+        const fetchChore = async () => {
+            try {
+                const response = await axios.get(`/api/chores/${id}`);
+                setChore(response.data);
+            } catch (error) {
+                console.error('Error fetching chore details:', error);
+            }
+        };
+        fetchChore();
     }, [id]);
 
     if (!chore) return <div>Loading...</div>;
@@ -23,7 +29,7 @@ function ChoreDetails() {
             <p><strong>Location:</strong> {chore.location}</p>
             <p><strong>Status:</strong> {chore.completed ? 'Completed' : 'Pending'}</p>
             <Link to={`/chores/${id}/edit`}>Edit</Link>
-            <Link to="/chores">Back to List</Link>
+            <Link to="/dashboard">Back to Dashboard</Link>
         </div>
     );
 }
