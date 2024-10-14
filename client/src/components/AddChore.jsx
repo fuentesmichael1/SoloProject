@@ -19,6 +19,23 @@ function AddChore() {
         return Object.keys(tempErrors).length === 0;
     };
 
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        switch (name) {
+            case 'name':
+                setName(value);
+                break;
+            case 'description':
+                setDescription(value);
+                break;
+            case 'location':
+                setLocation(value);
+                break;
+            default:
+                break;
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (validateForm()) {
