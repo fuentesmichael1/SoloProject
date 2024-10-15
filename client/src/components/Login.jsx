@@ -4,7 +4,7 @@ import axios from 'axios';
 
 function Login() {
     const [loginData, setLoginData] = useState({ email: '', password: '' });
-    const [registerData, setRegisterData] = useState({ email: '', password: '', confirmPassword: '' });
+    const [registerData, setRegisterData] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
@@ -19,12 +19,11 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            console.log('Login attempt with:', loginData); // Add this line to log the data
             const response = await axios.post('http://localhost:8000/users/login', loginData);
             localStorage.setItem('token', response.data.token);
             navigate('/dashboard');
         } catch (error) {
-            console.error('Login error:', error.response?.data); // Log the error response
+            console.error('Login error:', error.response?.data);
             setErrors({ login: error.response?.data?.login || 'Login failed' });
         }
     };
@@ -38,7 +37,8 @@ function Login() {
         try {
             const response = await axios.post('http://localhost:8000/users/register', registerData);
             console.log('Registration successful:', response.data);
-            navigate('/login');
+            localStorage.setItem('token', response.data.token);
+            navigate('/dashboard');
         } catch (error) {
             console.error('Registration error:', error.response?.data);
             setErrors({ register: error.response?.data?.register || 'Registration failed' });
@@ -73,6 +73,22 @@ function Login() {
             <div>
                 <h2>Register</h2>
                 <form onSubmit={handleRegister}>
+                    <input
+                        type="text"
+                        name="firstName"
+                        placeholder="First Name"
+                        value={registerData.firstName}
+                        onChange={handleRegisterChange}
+                        required
+                    />
+                    <input
+                        type="text"
+                        name="lastName"
+                        placeholder="Last Name"
+                        value={registerData.lastName}
+                        onChange={handleRegisterChange}
+                        required
+                    />
                     <input
                         type="email"
                         name="email"

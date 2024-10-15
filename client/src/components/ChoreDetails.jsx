@@ -10,8 +10,9 @@ function ChoreDetails() {
     useEffect(() => {
         const fetchChore = async () => {
             try {
-                const response = await axios.get(`/api/chores/${id}`);
+                const response = await axios.get(`http://localhost:8000/api/chores/${id}`);
                 setChore(response.data);
+                console.log('Fetched chore:', response.data);
             } catch (error) {
                 console.error('Error fetching chore details:', error);
             }
@@ -24,9 +25,9 @@ function ChoreDetails() {
     return (
         <div>
             <h2>Chore Details</h2>
-            <p><strong>Name:</strong> {chore.name}</p>
-            <p><strong>Description:</strong> {chore.description}</p>
-            <p><strong>Location:</strong> {chore.location}</p>
+            <p><strong>Name:</strong> {chore.name || 'N/A'}</p>
+            <p><strong>Description:</strong> {chore.description || 'N/A'}</p>
+            <p><strong>Location:</strong> {chore.location || 'N/A'}</p>
             <p><strong>Status:</strong> {chore.completed ? 'Completed' : 'Pending'}</p>
             <Link to={`/chores/${id}/edit`}>Edit</Link>
             <Link to="/dashboard">Back to Dashboard</Link>

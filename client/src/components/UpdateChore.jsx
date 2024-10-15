@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { set } from 'mongoose';
 
 const API_URL = 'http://localhost:8000';
 
@@ -17,6 +19,7 @@ function UpdateChore() {
             .then(data => {
                 setName(data.name);
                 setDescription(data.description);
+                setLocation(data.location);
                 setCompleted(data.completed);
             });
     }, [id]);
@@ -24,7 +27,7 @@ function UpdateChore() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`/api/chores/${id}`, { name, description, location, completed });
+            await axios.put(`${API_URL}/api/chores/${id}`, { name, description, location, completed });
             navigate('/dashboard');
         } catch (error) {
             console.error('Error updating chore:', error);
