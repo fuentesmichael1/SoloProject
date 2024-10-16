@@ -20,20 +20,21 @@ export const registerUser = async (req, res) => {
     }
 };
 
-
-
 export const loginUser = async (req, res) => {
+    console.log('Login attempt:', req.body);
     try {
         const { email, password } = req.body;
         if (!email || !password) {
             return res.status(400).json({ message: "Email and password are required" });
         }
         const user = await User.findOne({ email });
+        console.log('User found:', user);
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '60h' });
-        res.json({ message: "Logged in successfully", token, userName: user.name });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        console.log('Token generated:', token);
+        res.json({ message: "Logged in successfully", token });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: "Login failed", error: error.message });
@@ -45,31 +46,32 @@ export const logoutUser = (req, res) => {
     Navigation('/login');
     res.json({ message: "Logged out successfully" });
 };
-
 export const authenticate = async (req, res, next) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
-        console.log('Received token:', token);
         if (!token) {
             return res.status(401).json({ message: 'Authentication required' });
         }
+        console.log('JWT_SECRET used for verification:', process.env.JWT_SECRET);
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('Decoded token:', decoded);
-        req.user = decoded;
+        req.user = { id: decoded.id };
         next();
     } catch (error) {
-        console.error('Token verification error:', error);
         res.status(401).json({ message: 'Invalid token' });
     }
 };
 
+
 export const getCurrentUser = async (req, res) => {
+    console.log('getCurrentUser called, user id:', req.user.id);
     try {
-        const user = await User.findById(req.user.id).select('firstName email');
-        console.log('User found:', user);
+        const user = await User.findById(req.user.id).select('-password');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
         res.json(user);
     } catch (error) {
-        console.error('Error in getCurrentUser:', error);
-        res.status(500).json({ message: 'Server error', error: error.toString() });
+        console.error('Error fetching user:', error);
+        res.status(500).json({ message: 'Server error' });
     }
 };

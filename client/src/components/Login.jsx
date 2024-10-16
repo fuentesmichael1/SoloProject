@@ -18,15 +18,17 @@ function Login() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        console.log('Login attempt with:', loginData);
         try {
             const response = await axios.post('http://localhost:8000/users/login', loginData);
+            console.log('Login response:', response.data);
             localStorage.setItem('token', response.data.token);
             navigate('/dashboard');
         } catch (error) {
-            console.error('Login error:', error.response?.data);
-            setErrors({ login: error.response?.data?.login || 'Login failed' });
+            console.error('Login error:', error.response?.data || error.message);
+            setErrors({ login: error.response?.data?.message || 'Login failed' });
         }
-    };
+    };    
     
     const handleRegister = async (e) => {
         e.preventDefault();

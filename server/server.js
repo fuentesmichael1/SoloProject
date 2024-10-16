@@ -18,6 +18,8 @@ app.use(cors({
 app.use('/users', userRoutes);
 app.use('/api', choreRoutes);
 
+console.log('Routes set up:', app._router.stack.filter(r => r.route).map(r => r.route.path));
+
 dbConnect();
 
 app.listen(PORT, () => {

@@ -18,5 +18,11 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.0"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7"
+  }
 }
