@@ -132,18 +132,20 @@ function ChoreList() {
                         <tbody>
                             {[...allChores, ...myPostedChores].map((chore) => {
                                 const uniqueKey = `${chore._id}-${choreIds[chore._id] || 'new'}`;
+                                console.log('Current user ID:', user?._id);
+                                console.log('Chore posted by:', chore.postedBy);
                                 return (
                                     <tr key={uniqueKey}>
                                         <td>{chore.name}</td>
                                         <td>{chore.location}</td>
                                         <td>
                                             <button onClick={() => handleViewChore(chore._id)}>View</button>
-                                            {chore.postedBy === user?._id && (
+                                            {/* {chore.postedBy === user?._id && ( */}
                                                 <>
                                                     <button onClick={() => handleEditChore(chore._id)}>Edit</button>
                                                     <button onClick={() => handleCancelChore(chore._id)}>Cancel</button>
                                                 </>
-                                            )}
+                                            {/* )} */}
                                             {chore.postedBy !== user?._id && !chore.assignedTo && (
                                                 <button onClick={() => handleAddChore(chore._id)}>Add</button>
                                             )}
