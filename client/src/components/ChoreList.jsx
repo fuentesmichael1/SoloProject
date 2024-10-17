@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { useChores } from './ChoreContext.jsx';
 
 const API_URL = 'http://localhost:8000';
 
 function ChoreList() {
-    const [availableChores, setAvailableChores] = useState([]);
-    const [myChores, setMyChores] = useState([]);
+    const { chores, setChores } = useChores();
     const [user, setUser] = useState(null);
-    const [isUserLoading, setIsUserLoading] = useState(true);
-    const [isChoresLoading, setIsChoresLoading] = useState(true);
+    const [choreIds, setChoreIds] = useState({});
     const navigate = useNavigate();
+    const location = useLocation();
+    const renderIdRef = useRef(0);
 
     useEffect(() => {
+        renderIdRef.current += 1;
         fetchUser();
         fetchChores();
-    }, []);
+    }, [location]);
 
     const fetchUser = async () => {
         try {
@@ -28,37 +30,50 @@ function ChoreList() {
         } catch (error) {
             console.error('Error fetching user:', error);
             navigate('/login');
-        } finally {
-            setIsUserLoading(false);
         }
     };
 
     const fetchChores = async () => {
         try {
-            const response = await axios.get(`${API_URL}/api/chores`);
-            const allChores = response.data;
-            localStorage.setItem('allChores', JSON.stringify(allChores));
-            if (user) {
-                setAvailableChores(allChores.filter(chore => !chore.assignedTo || chore.assignedTo !== user._id));
-                setMyChores(allChores.filter(chore => chore.assignedTo === user._id));
-            } else {
-                setAvailableChores(allChores);
-                setMyChores([]);
-            }
+            const response = await axios.get(`${API_URL}/api/chores`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            });
+            const newChores = response.data;
+            const newChoreIds = {...choreIds};
+            newChores.forEach(chore => {
+                if (!newChoreIds[chore._id]) {
+                    newChoreIds[chore._id] = Math.random().toString(36).substr(2, 9);
+                }
+            });
+            
+            setChores(prevChores => {
+                const choreMap = new Map(prevChores.map(chore => [chore._id, chore]));
+                newChores.forEach(newChore => {
+                    const existingChore = choreMap.get(newChore._id);
+                    if (existingChore) {
+                        choreMap.set(newChore._id, { ...newChore, postedBy: existingChore.postedBy, assignedTo: existingChore.assignedTo });
+                    } else {
+                        choreMap.set(newChore._id, newChore);
+                    }
+                });
+                return Array.from(choreMap.values());
+            });
+            
+            setChoreIds(newChoreIds);
         } catch (error) {
             console.error('Error fetching chores:', error);
-        } finally {
-            setIsChoresLoading(false);
         }
-    };
+    };    
 
     const handleAddChore = async (choreId) => {
         try {
+            const token = localStorage.getItem('token');
             const response = await axios.put(`${API_URL}/api/chores/${choreId}/assign`, {}, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                headers: { Authorization: `Bearer ${token}` }
             });
-            setMyChores(prevChores => [...prevChores, response.data]);
-            setAvailableChores(prevChores => prevChores.filter(chore => chore._id !== choreId));
+            setChores(prevChores => prevChores.map(chore => 
+                chore._id === choreId ? { ...chore, assignedTo: user._id } : chore
+            ));
         } catch (error) {
             console.error('Error adding chore:', error);
         }
@@ -69,9 +84,25 @@ function ChoreList() {
             await axios.delete(`${API_URL}/api/chores/${choreId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
-            setMyChores(prevChores => prevChores.filter(chore => chore._id !== choreId));
+            setChores(prevChores => prevChores.filter(chore => chore._id !== choreId));
         } catch (error) {
             console.error('Error completing chore:', error);
+        }
+    };
+
+    const handleEditChore = (choreId) => {
+        console.log('Editing chore with ID:', choreId);
+        navigate(`/chores/${choreId}/edit`);
+    };
+
+    const handleCancelChore = async (choreId) => {
+        try {
+            await axios.delete(`${API_URL}/api/chores/${choreId}`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+            });
+            setChores(prevChores => prevChores.filter(chore => chore._id !== choreId));
+        } catch (error) {
+            console.error('Error canceling chore:', error);
         }
     };
 
@@ -79,68 +110,75 @@ function ChoreList() {
         navigate(`/chores/${choreId}`);
     };
 
-    if (isUserLoading) {
-        return <div>Loading user data...</div>;
-    }
+    const allChores = chores.filter(chore => !chore.assignedTo);
+    const myPostedChores = chores.filter(chore => chore.postedBy === user?._id);
+    const myAssignedChores = chores.filter(chore => chore.assignedTo === user?._id);
 
     return (
         <div>
             <h1>Welcome, {user?.firstName || 'User'}!</h1>
             <Link to="/add-chore">Add a Chore</Link>
-            {isChoresLoading ? (
-                <div>Loading chores...</div>
-            ) : (
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ width: '48%' }}>
-                        <h2>Available Jobs</h2>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                                <tr>
-                                    <th>Job</th>
-                                    <th>Location</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {availableChores.map((chore) => (
-                                    <tr key={chore._id}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ width: '48%' }}>
+                    <h2>Available Jobs</h2>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead>
+                            <tr>
+                                <th>Job</th>
+                                <th>Location</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {[...allChores, ...myPostedChores].map((chore) => {
+                                const uniqueKey = `${chore._id}-${choreIds[chore._id] || 'new'}`;
+                                return (
+                                    <tr key={uniqueKey}>
                                         <td>{chore.name}</td>
                                         <td>{chore.location}</td>
                                         <td>
                                             <button onClick={() => handleViewChore(chore._id)}>View</button>
-                                            <button onClick={() => handleAddChore(chore._id)}>Add</button>
+                                            {chore.postedBy === user?._id && (
+                                                <>
+                                                    <button onClick={() => handleEditChore(chore._id)}>Edit</button>
+                                                    <button onClick={() => handleCancelChore(chore._id)}>Cancel</button>
+                                                </>
+                                            )}
+                                            {chore.postedBy !== user?._id && !chore.assignedTo && (
+                                                <button onClick={() => handleAddChore(chore._id)}>Add</button>
+                                            )}
                                         </td>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div style={{ width: '48%' }}>
-                        <h2>My Jobs</h2>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                                <tr>
-                                    <th>Job</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {myChores.map((chore) => (
-                                    <tr key={chore._id}>
-                                        <td>{chore.name}</td>
-                                        <td>
-                                            <button onClick={() => handleViewChore(chore._id)}>View</button>
-                                            <button onClick={() => handleCompleteChore(chore._id)}>Done</button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 </div>
-            )}
+                <div style={{ width: '48%' }}>
+                    <h2>My Jobs</h2>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead>
+                            <tr>
+                                <th>Job</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {myAssignedChores.map((chore) => (
+                                <tr key={`${chore._id}-${choreIds[chore._id] || 'new'}-assigned`}>
+                                    <td>{chore.name}</td>
+                                    <td>
+                                        <button onClick={() => handleViewChore(chore._id)}>View</button>
+                                        <button onClick={() => handleCompleteChore(chore._id)}>Done</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    );
+    );    
 }
 
 export default ChoreList;

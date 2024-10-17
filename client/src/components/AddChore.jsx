@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useChores } from './ChoreContext';
 
 const API_URL = 'http://localhost:8000';
 
@@ -10,21 +11,25 @@ function AddChore() {
     const [location, setLocation] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { setChores } = useChores();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:8000/api/chores', 
+            if (!token) {
+                throw new Error('No token found');
+            }
+            const response = await axios.post(`${API_URL}/api/chores`, 
                 { name, description, location },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
+            console.log('Chore added successfully:', response.data);
             navigate('/dashboard');
         } catch (error) {
             console.error('Error adding chore:', error.response?.data || error.message);
         }
-    };
-    
+    };    
     
     return (
         <div>

@@ -1,25 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useChores } from './ChoreContext.jsx';
 
 const API_URL = 'http://localhost:8000';
 
 function ChoreDetails() {
     const [chore, setChore] = useState(null);
     const { id } = useParams();
+    const navigate = useNavigate();
+    const { chores, updateChore } = useChores();
 
     useEffect(() => {
-        const fetchChore = async () => {
-            try {
-                const response = await axios.get(`${API_URL}/api/chores/${id}`);
-                console.log('Chore data received:', response.data);
-                setChore(response.data);
-            } catch (error) {
-                console.error('Error fetching chore details:', error);
+        const fetchChoreData = async () => {
+            if (!chore) {
+                try {
+                    const response = await axios.get(`${API_URL}/api/chores/${id}`);
+                    setChore(response.data);
+                    updateChore(response.data);
+                } catch (error) {
+                    console.error('Error fetching chore:', error);
+                }
             }
         };
-        fetchChore();
-    }, [id]);    
+        fetchChoreData();
+    }, [id, chore, updateChore]);
 
     if (!chore) return <div>Loading...</div>;
 
@@ -30,7 +35,7 @@ function ChoreDetails() {
             <p><strong>Description:</strong> {chore.description}</p>
             <p><strong>Location:</strong> {chore.location}</p>
             <p><strong>Status:</strong> {chore.completed ? 'Completed' : 'Pending'}</p>
-            <Link to="/dashboard">Back to Dashboard</Link>
+            <button onClick={() => navigate('/dashboard')}>Back to Dashboard</button>
         </div>
     );
 }

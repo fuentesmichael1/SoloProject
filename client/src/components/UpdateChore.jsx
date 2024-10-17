@@ -14,16 +14,6 @@ function UpdateChore() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const fetchUser = async (userId) => {
-        try {
-            const response = await axios.get(`${API_URL}/users/${userId}`);
-            console.log('User data received:', response.data);
-            setUser(response.data);
-        } catch (error) {
-            console.error('Error fetching user:', error);
-        }
-    };    
-
     useEffect(() => {
         const fetchChoreAndUser = async () => {
             try {
@@ -45,19 +35,32 @@ function UpdateChore() {
                 console.error('Error fetching chore:', error);
             }
         };
-        
     
         fetchChoreAndUser();
-    }, [id]);    
+    }, [id]);
+
+    useEffect(() => {
+        if (chore) {
+            setName(chore.name);
+            setDescription(chore.description);
+            setLocation(chore.location);
+            setCompleted(chore.completed);
+        }
+    }, [chore]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`${API_URL}/api/chores/${id}`, 
+            const response = await axios.put(`${API_URL}/api/chores/${id}`, 
                 { name, description, location, completed },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
-            navigate('/dashboard');
+            
+            if (response.data) {
+                console.log('Chore updated successfully:', response.data);
+                setChore(response.data);
+                navigate('/dashboard');
+            }
         } catch (error) {
             console.error('Error updating chore:', error);
         }

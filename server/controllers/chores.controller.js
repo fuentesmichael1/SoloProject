@@ -1,4 +1,9 @@
 import Chore from '../models/chores.model.js';
+import jwt from 'jsonwebtoken';
+
+const generateToken = (userId) => {
+    return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
+};
 
 export const createChore = async (req, res) => {
     try {
@@ -41,7 +46,6 @@ export const getOneChore = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
 
 export const updateChore = async (req, res) => {
     try {
