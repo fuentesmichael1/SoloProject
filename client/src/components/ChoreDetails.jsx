@@ -35,17 +35,25 @@ function ChoreDetails() {
         navigate('/dashboard');
     };
 
-    if (!chore) return <div>Loading...</div>;
+    if (!chore) return <div className="min-h-screen w-screen max-w-full bg-gray-100 p-8 text-black flex justify-center items-center">Loading...</div>;
 
     return (
-        <div>
-            <h2>Chore Details</h2>
-            <button onClick={handleLogout}>Logout</button>
-            <button onClick={handleBack}>Back to Dashboard</button>
-            <p><strong>Name:</strong> {chore.name}</p>
-            <p><strong>Description:</strong> {chore.description}</p>
-            <p><strong>Location:</strong> {chore.location}</p>
-            <p><strong>Status:</strong> {chore.completed ? 'Completed' : 'Pending'}</p>
+        <div className="min-h-screen w-screen max-w-full bg-gray-100 p-8 text-black">
+            <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
+                <h2 className="text-3xl font-semibold mb-6 pb-2 border-b border-gray-200">Chore Details</h2>
+                <div className="mb-4 space-y-2">
+                    <p><strong className="font-semibold">Name:</strong> {chore.name}</p>
+                    <p><strong className="font-semibold">Description:</strong> {chore.description}</p>
+                    <p><strong className="font-semibold">Location:</strong> {chore.location}</p>
+                    <p><strong className="font-semibold">Status:</strong> {chore.completed ? 'Completed' : 'Pending'}</p>
+                    <p><strong className="font-semibold">Created by:</strong> {chore.postedBy ? `${chore.postedBy.firstName} ${chore.postedBy.lastName}` : 'Unknown'}</p>
+                    <p><strong className="font-semibold">Posted on:</strong> {new Date(chore.createdAt).toLocaleString()}</p>
+                </div>
+                <div className="flex space-x-4">
+                    <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300">Logout</button>
+                    <button onClick={handleBack} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">Back to Dashboard</button>
+                </div>
+            </div>
         </div>
     );
 }

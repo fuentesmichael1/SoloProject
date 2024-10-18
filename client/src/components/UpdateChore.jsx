@@ -75,43 +75,40 @@ function UpdateChore() {
         navigate('/dashboard');
     };
     
-    if (!chore) return <div>Loading...</div>;
+    if (!chore) return <div className="min-h-screen w-screen max-w-full bg-gray-100 p-8 text-black flex justify-center items-center">Loading...</div>;
 
     return (
-        <div>
-            <h2>Update Chore</h2>
-            <button onClick={handleLogout}>Logout</button>
-            <button onClick={handleBack}>Back to Dashboard</button>
-            <p>Posted by: {user ? `${user.firstName} ${user.lastName}` : 'Unknown'}</p>
-            <p>Posted on: {new Date(chore.createdAt).toLocaleString()}</p>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
-                <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                />
-                <input
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    required
-                />
-                <label>
+        <div className="min-h-screen w-screen max-w-full bg-gray-100 p-8 text-black">
+            <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
+                <h2 className="text-3xl font-semibold mb-6 pb-2 border-b border-gray-200">Update Chore</h2>
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <input
-                        type="checkbox"
-                        checked={completed}
-                        onChange={(e) => setCompleted(e.target.checked)}
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded text-white bg-gray-700"
                     />
-                    Completed
-                </label>
-                <button type="submit">Update Chore</button>
-            </form>
+                    <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded text-white bg-gray-700"
+                    />
+                    <input
+                        type="text"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded text-white bg-gray-700"
+                    />
+                    <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300">Update Chore</button>
+                </form>
+                <div className="mt-4 flex space-x-4">
+                    <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300">Logout</button>
+                    <button onClick={handleBack} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">Back to Dashboard</button>
+                </div>
+            </div>
         </div>
     );
 }
