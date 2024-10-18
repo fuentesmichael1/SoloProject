@@ -29,11 +29,22 @@ function AddChore() {
         } catch (error) {
             console.error('Error adding chore:', error.response?.data || error.message);
         }
-    };    
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login');
+    };
+
+    const handleBack = () => {
+        navigate('/dashboard');
+    };
     
     return (
         <div>
             <h2>Add New Chore</h2>
+            <button onClick={handleLogout}>Logout</button>
+            <button onClick={handleBack}>Back to Dashboard</button>
             {error && <p style={{color: 'red'}}>{error}</p>}
             <form onSubmit={handleSubmit}>
                 <input

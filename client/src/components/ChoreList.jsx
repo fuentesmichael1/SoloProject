@@ -110,42 +110,47 @@ function ChoreList() {
         navigate(`/chores/${choreId}`);
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login');
+    };
+
     const allChores = chores.filter(chore => !chore.assignedTo);
     const myPostedChores = chores.filter(chore => chore.postedBy === user?._id);
     const myAssignedChores = chores.filter(chore => chore.assignedTo === user?._id);
 
     return (
-        <div>
-            <h1>Welcome, {user?.firstName || 'User'}!</h1>
-            <Link to="/add-chore">Add a Chore</Link>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div style={{ width: '48%' }}>
-                    <h2>Available Jobs</h2>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead>
+        <div className="min-h-screen w-screen max-w-full bg-gray-100 p-8 text-black">
+            <h1 className="text-4xl font-bold mb-8 text-center">Welcome, {user?.firstName || 'User'}!</h1>
+            <div className="flex justify-center mb-8">
+                <Link to="/add-chore" className="bg-green-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-green-600 transition duration-300">Add a Chore</Link>
+            </div>
+            <div className="flex space-x-8">
+                <div className="w-1/2 bg-white rounded-lg shadow-lg p-6">
+                    <h2 className="text-3xl font-semibold mb-6 pb-2 border-b border-gray-200">Available Jobs</h2>
+                    <table className="w-full">
+                        <thead className="bg-gray-50">
                             <tr>
-                                <th>Job</th>
-                                <th>Location</th>
-                                <th>Action</th>
+                                <th className="p-3 text-left text-lg font-semibold">Job</th>
+                                <th className="p-3 text-left text-lg font-semibold">Location</th>
+                                <th className="p-3 text-left text-lg font-semibold">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {[...allChores, ...myPostedChores].map((chore) => {
                                 const uniqueKey = `${chore._id}-${choreIds[chore._id] || 'new'}`;
                                 return (
-                                    <tr key={uniqueKey}>
-                                        <td>{chore.name}</td>
-                                        <td>{chore.location}</td>
-                                        <td>
-                                            <button onClick={() => handleViewChore(chore._id)}>View</button>
+                                    <tr key={uniqueKey} className="border-b">
+                                        <td className="p-3">{chore.name}</td>
+                                        <td className="p-3">{chore.location}</td>
+                                        <td className="p-3">
+                                            <button onClick={() => handleViewChore(chore._id)} className="bg-blue-500 text-white px-2 py-1 rounded mr-2">View</button>
+                                            <button onClick={() => handleAddChore(chore._id)} className="bg-green-500 text-white px-2 py-1 rounded mr-2">Add</button>
                                             {chore.postedBy && chore.postedBy._id === user?._id && (
                                                 <>
-                                                    <button onClick={() => handleEditChore(chore._id)}>Edit</button>
-                                                    <button onClick={() => handleCancelChore(chore._id)}>Cancel</button>
+                                                    <button onClick={() => handleEditChore(chore._id)} className="bg-yellow-500 text-white px-2 py-1 rounded mr-2">Edit</button>
+                                                    <button onClick={() => handleCancelChore(chore._id)} className="bg-red-500 text-white px-2 py-1 rounded">Cancel</button>
                                                 </>
-                                            )}
-                                            {(!chore.postedBy || chore.postedBy._id !== user?._id) && !chore.assignedTo && (
-                                                <button onClick={() => handleAddChore(chore._id)}>Add</button>
                                             )}
                                         </td>
                                     </tr>
@@ -154,22 +159,22 @@ function ChoreList() {
                         </tbody>
                     </table>
                 </div>
-                <div style={{ width: '48%' }}>
-                    <h2>My Jobs</h2>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead>
+                <div className="w-1/2 bg-white rounded-lg shadow-lg p-6">
+                    <h2 className="text-3xl font-semibold mb-6 pb-2 border-b border-gray-200">My Jobs</h2>
+                    <table className="w-full">
+                        <thead className="bg-gray-50">
                             <tr>
-                                <th>Job</th>
-                                <th>Action</th>
+                                <th className="p-3 text-left text-lg font-semibold">Job</th>
+                                <th className="p-3 text-left text-lg font-semibold">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {myAssignedChores.map((chore) => (
-                                <tr key={`${chore._id}-${choreIds[chore._id] || 'new'}-assigned`}>
-                                    <td>{chore.name}</td>
-                                    <td>
-                                        <button onClick={() => handleViewChore(chore._id)}>View</button>
-                                        <button onClick={() => handleCompleteChore(chore._id)}>Done</button>
+                                <tr key={`${chore._id}-${choreIds[chore._id] || 'new'}-assigned`} className="border-b">
+                                    <td className="p-3">{chore.name}</td>
+                                    <td className="p-3">
+                                        <button onClick={() => handleViewChore(chore._id)} className="bg-blue-500 text-white px-2 py-1 rounded mr-2">View</button>
+                                        <button onClick={() => handleCompleteChore(chore._id)} className="bg-purple-500 text-white px-2 py-1 rounded">Done</button>
                                     </td>
                                 </tr>
                             ))}
@@ -178,7 +183,7 @@ function ChoreList() {
                 </div>
             </div>
         </div>
-    );       
+    );
 }
 
 export default ChoreList;

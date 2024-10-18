@@ -26,16 +26,26 @@ function ChoreDetails() {
         fetchChoreData();
     }, [id, chore, updateChore]);
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login');
+    };
+
+    const handleBack = () => {
+        navigate('/dashboard');
+    };
+
     if (!chore) return <div>Loading...</div>;
 
     return (
         <div>
             <h2>Chore Details</h2>
+            <button onClick={handleLogout}>Logout</button>
+            <button onClick={handleBack}>Back to Dashboard</button>
             <p><strong>Name:</strong> {chore.name}</p>
             <p><strong>Description:</strong> {chore.description}</p>
             <p><strong>Location:</strong> {chore.location}</p>
             <p><strong>Status:</strong> {chore.completed ? 'Completed' : 'Pending'}</p>
-            <button onClick={() => navigate('/dashboard')}>Back to Dashboard</button>
         </div>
     );
 }

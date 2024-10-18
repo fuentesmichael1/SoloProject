@@ -65,12 +65,23 @@ function UpdateChore() {
             console.error('Error updating chore:', error);
         }
     };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login');
+    };
+
+    const handleBack = () => {
+        navigate('/dashboard');
+    };
     
     if (!chore) return <div>Loading...</div>;
 
     return (
         <div>
             <h2>Update Chore</h2>
+            <button onClick={handleLogout}>Logout</button>
+            <button onClick={handleBack}>Back to Dashboard</button>
             <p>Posted by: {user ? `${user.firstName} ${user.lastName}` : 'Unknown'}</p>
             <p>Posted on: {new Date(chore.createdAt).toLocaleString()}</p>
             <form onSubmit={handleSubmit}>
