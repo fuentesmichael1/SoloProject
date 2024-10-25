@@ -11,6 +11,7 @@ function UpdateChore() {
     const [description, setDescription] = useState('');
     const [location, setLocation] = useState('');
     const [completed, setCompleted] = useState(false);
+    const [error, setError] = useState('');
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -50,6 +51,20 @@ function UpdateChore() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (name.length < 3) {
+            setError('Title must be at least 3 characters long.');
+            return;
+        }
+        if (description.length < 10) {
+            setError('Description must be at least 10 characters long.');
+            return;
+        }
+        if (!location.trim()) {
+            setError('Location must not be blank.');
+            return;
+        }
+        setError('');
+
         try {
             const response = await axios.put(`${API_URL}/api/chores/${id}`, 
                 { name, description, location, completed },
@@ -81,6 +96,7 @@ function UpdateChore() {
         <div className="min-h-screen w-screen max-w-full bg-gray-100 p-8 text-black">
             <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
                 <h2 className="text-3xl font-semibold mb-6 pb-2 border-b border-gray-200">Update Chore</h2>
+                {error && <p className="text-red-500 mb-4">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <input
                         type="text"

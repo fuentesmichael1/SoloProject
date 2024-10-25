@@ -46,7 +46,7 @@ function ChoreDetails() {
                     <p><strong className="font-semibold">Description:</strong> {chore.description}</p>
                     <p><strong className="font-semibold">Location:</strong> {chore.location}</p>
                     <p><strong className="font-semibold">Status:</strong> {chore.completed ? 'Completed' : 'Pending'}</p>
-                    <p><strong className="font-semibold">Created by:</strong> {chore.postedBy ? `${chore.postedBy.firstName} ${chore.postedBy.lastName}` : 'Unknown'}</p>
+                    <p><strong className="font-semibold">Created by:</strong> {chore.postedBy ? `${chore.postedBy.firstName}` : 'Unknown'}</p>
                     <p><strong className="font-semibold">Posted on:</strong> {new Date(chore.createdAt).toLocaleString()}</p>
                 </div>
                 <div className="flex space-x-4">

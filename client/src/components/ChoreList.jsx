@@ -121,7 +121,12 @@ function ChoreList() {
 
     return (
         <div className="min-h-screen w-screen max-w-full bg-gray-100 p-8 text-black">
-            <h1 className="text-4xl font-bold mb-8 text-center">Welcome, {user?.firstName || 'User'}!</h1>
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-4xl font-bold">Welcome, {user?.firstName || 'User'}!</h1>
+                <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300">
+                    Logout
+                </button>
+            </div>
             <div className="flex justify-center mb-8">
                 <Link to="/add-chore" className="bg-green-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-green-600 transition duration-300">Add a Chore</Link>
             </div>
@@ -149,7 +154,7 @@ function ChoreList() {
                                             {chore.postedBy && chore.postedBy._id === user?._id && (
                                                 <>
                                                     <button onClick={() => handleEditChore(chore._id)} className="bg-yellow-500 text-white px-2 py-1 rounded mr-2">Edit</button>
-                                                    <button onClick={() => handleCancelChore(chore._id)} className="bg-red-500 text-white px-2 py-1 rounded">Cancel</button>
+                                                    <button onClick={() => handleCancelChore(chore._id)} className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
                                                 </>
                                             )}
                                         </td>

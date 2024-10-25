@@ -15,6 +15,20 @@ function AddChore() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (name.length < 3) {
+            setError('Title must be at least 3 characters long.');
+            return;
+        }
+        if (description.length < 10) {
+            setError('Description must be at least 10 characters long.');
+            return;
+        }
+        if (!location.trim()) {
+            setError('Location must not be blank.');
+            return;
+        }
+        setError('');
+
         try {
             const token = localStorage.getItem('token');
             if (!token) {
